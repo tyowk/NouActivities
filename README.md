@@ -6,8 +6,11 @@ NouActivities is a simple, open-source Discord activities bot built using HTTP i
 
 ## Installation
 
-Follow these steps to install and run the bot:
+**Vercel Deploy:**
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftyowk%2FNouActivities%2Ftree%2Fmain&env=TOKEN,KEY,ID,REPORT&project-name=activities&repository-name=activities)
+
+**Follow these steps to install and run the bot:**
 1. **Clone the repository**:
 
    ```bash
