@@ -1,3 +1,5 @@
+[![Discord Bots](https://top.gg/api/widget/1305829720213950474.svg)](https://top.gg/bot/1305829720213950474/invite)
+
 # NouActivities
 
 NouActivities is a simple, open-source Discord activities bot built using HTTP interactions.
