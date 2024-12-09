@@ -31,60 +31,56 @@ client.on('interaction', async (interaction, raw) => {
         switch (interaction.commandName?.toLowerCase()) {
                       
             case 'invite': {
-                const embed = new EmbedBuilder()
-                    .setTitle('Invite Me to Your Server!')
-                    .setDescription(`Press the button bellow to add me to your server.\nNeed help? then join to my support server!`)
-                    .setColor('#3b3ee3');
-                
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setLabel('Invite')
-                        .setURL('https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=281601&integration_type=0&scope=bot+applications.commands')
-                        .setStyle(ButtonStyle.Link),
-                    new ButtonBuilder()
-                        .setLabel('Support')
-                        .setURL('https://noujs.my.id/discord')
-                        .setStyle(ButtonStyle.Link)
-                        .setDisabled(true),
-                    new ButtonBuilder()
-                        .setLabel('Source')
-                        .setURL('https://github.com/tyowk/NouActivities')
-                        .setStyle(ButtonStyle.Link)
-                );
-                
                 return interaction.reply({
-                    embeds: [embed],
-                    components: [row]
+                    embeds: [
+                        new EmbedBuilder()
+                            .setTitle('Invite Me to Your Server!')
+                            .setDescription(`Press the button bellow to add me to your server.\nNeed help? then join to my support server!`)
+                            .setColor('#3b3ee3')
+                    ],
+                    components: [
+                        new ActionRowBuilder().addComponents(
+                            new ButtonBuilder()
+                                .setLabel('Invite')
+                                .setURL('https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=281601&integration_type=0&scope=bot+applications.commands')
+                                .setStyle(ButtonStyle.Link),
+                            new ButtonBuilder()
+                                .setLabel('Support')
+                                .setURL('https://noujs.my.id/discord')
+                                .setStyle(ButtonStyle.Link)
+                                .setDisabled(true),
+                            new ButtonBuilder()
+                                .setLabel('Source')
+                                .setURL('https://github.com/tyowk/NouActivities')
+                                .setStyle(ButtonStyle.Link)
+                        )
+                    ]
                 });
             }
                       
             case 'activities': {
-                if (!interaction.inGuild())
-                    return interaction.reply({ content: '🚫  Uhh... This command cannot be used in DM', ephemeral: true });
+                if (!interaction.inGuild()) return interaction.reply({ content: '🚫  Uhh... This command cannot be used in DM', ephemeral: true });
                 const channelId = raw.data.options[1].value;
                 const appId = raw.data.options[0].value;
                 const channel = await getChannel(channelId);
-                if (channel.code === 50001)
-                    return interaction.reply({ content: '🚫  Uh oh... I don\'t have access to the channel', ephemeral: true });
-                if (channel.type !== 2)
-                    return interaction.reply({ content: '🚫  Nuh uh uh, The channel type must be a voice channel', ephemeral: true });
+                if (channel.code === 50001) return interaction.reply({ content: '🚫  Uh oh... I don\'t have access to the channel', ephemeral: true });
+                if (channel.type !== 2) return interaction.reply({ content: '🚫  Nuh uh uh, The channel type must be a voice channel', ephemeral: true });
                 
                 try {
                     const invite = await createInvite(channel.id, appId);
-                    if (invite.code === 50013 || !invite)
-                        return interaction.reply({ content: '🚫  Hmm... I don\'t have enough permissions', ephemeral: true });
-                    if (!isNaN(invite.code) || invite.code === 50035)
-                        return interaction.reply({ content: '🚫  Well, This is awkward... Bad request', ephemeral: true });
-                    const row = new ActionRowBuilder().addComponents(
-                        new ButtonBuilder()
-                            .setLabel('Start Activity')
-                            .setURL(`https://discord.gg/${invite.code}`)
-                            .setStyle(ButtonStyle.Link)
-                            .setEmoji('☕')
-                    );
+                    if (invite.code === 50013 || !invite) return interaction.reply({ content: '🚫  Hmm... I don\'t have enough permissions', ephemeral: true });
+                    if (!isNaN(invite.code) || invite.code === 50035) return interaction.reply({ content: '🚫  Well, This is awkward... Bad request', ephemeral: true });
                     return interaction.reply({
                         content: `<:dot:1315241311988879403>  **${invite.target_application?.name}**: https://discord.gg/${invite.code}`,
-                        components: [row]
+                        components: [
+                            new ActionRowBuilder().addComponents(
+                                new ButtonBuilder()
+                                    .setLabel('Start Activity')
+                                    .setURL(`https://discord.gg/${invite.code}`)
+                                    .setStyle(ButtonStyle.Link)
+                                    .setEmoji('☕')
+                            )
+                        ]
                     });
                 } catch (error) { return interaction.reply({ content: `🚫  Well... An error occurred: ${error.message}`, ephemeral: true })}
             }
@@ -103,22 +99,6 @@ client.on('interaction', async (interaction, raw) => {
             }
                 
             case 'help': {
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setLabel('Invite')
-                        .setURL('https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=281601&integration_type=0&scope=bot+applications.commands')
-                        .setStyle(ButtonStyle.Link),
-                    new ButtonBuilder()
-                        .setLabel('Support')
-                        .setURL('https://noujs.my.id/discord')
-                        .setStyle(ButtonStyle.Link)
-                        .setDisabled(true),
-                    new ButtonBuilder()
-                        .setLabel('Report')
-                        .setCustomId(`report_${interaction.user.id}`)
-                        .setStyle(ButtonStyle.Danger)
-                );
-                
                 return interaction.reply({
                     embeds: [
                         new EmbedBuilder()
@@ -137,7 +117,23 @@ client.on('interaction', async (interaction, raw) => {
                         })
                         .setColor('#3b3ee3')
                     ],
-                    components: [row]
+                    components: [
+                        new ActionRowBuilder().addComponents(
+                            new ButtonBuilder()
+                                .setLabel('Invite')
+                                .setURL('https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=281601&integration_type=0&scope=bot+applications.commands')
+                                .setStyle(ButtonStyle.Link),
+                            new ButtonBuilder()
+                                .setLabel('Support')
+                                .setURL('https://noujs.my.id/discord')
+                                .setStyle(ButtonStyle.Link)
+                                .setDisabled(true),
+                            new ButtonBuilder()
+                                .setLabel('Report')
+                                .setCustomId(`report_${interaction.user.id}`)
+                                .setStyle(ButtonStyle.Danger)
+                        )
+                    ]
                 });
             }
                 
@@ -147,55 +143,23 @@ client.on('interaction', async (interaction, raw) => {
         
     } else if (interaction.isButton()) {
         const customId = interaction.customId.split('_');
-        if (customId[0] === `report`) {
-            
-            if (customId[1] !== interaction.user.id) return interaction.reply({ content: '🚫  You cannot use this button', ephemeral: true });
-            const modal = new ModalBuilder()
-                .setCustomId('report')
-                .setTitle('NouActivities Report');
-            const input = new TextInputBuilder()
-                .setCustomId('input')
-                .setLabel('What do you want to report?')
-                .setStyle(TextInputStyle.Paragraph)
-                .setPlaceholder('You can report a bug, user, guild, etc.')
-                .setRequired(true);
-            const row = new ActionRowBuilder().addComponents(input);
-            modal.addComponents(row);
-            interaction.showModal(modal);
-            
-        } else if (customId[0] === 'accept') {
-            
-            const modal = new ModalBuilder()
-                .setCustomId(`accept_${customId[1]}`)
-                .setTitle('NouActivities Report');
-            const input = new TextInputBuilder()
-                .setCustomId('input')
-                .setLabel('Reason')
-                .setStyle(TextInputStyle.Paragraph)
-                .setRequired(false);
-            const row = new ActionRowBuilder().addComponents(input);
-            modal.addComponents(row);
-            interaction.showModal(modal);
-            
-        } else if (customId[0] === 'decline') {
-            
-            const modal = new ModalBuilder()
-                .setCustomId(`decline_${customId[1]}`)
-                .setTitle('NouActivities Report');
-            const input = new TextInputBuilder()
-                .setCustomId('input')
-                .setLabel('Reason')
-                .setStyle(TextInputStyle.Paragraph)
-                .setRequired(false);
-            const row = new ActionRowBuilder().addComponents(input);
-            modal.addComponents(row);
-            interaction.showModal(modal);
-        }
+        if (customId[0] === 'report' && customId[1] !== interaction.user.id) return interaction.reply({ content: '🚫  You cannot use this button', ephemeral: true });
+        const modal = new ModalBuilder()
+            .setCustomId(`${customId[0]}_${interaction.user.id}`)
+            .setTitle('NouActivities Report');
+        const input = new TextInputBuilder()
+            .setCustomId('input')
+            .setLabel(customId[0] === 'report' ? 'What do you want to report?' : 'Reason')
+            .setStyle(TextInputStyle.Paragraph)
+            .setPlaceholder(customId[0] === 'report' ? 'You can report a bug, user, guild, etc.' : 'Reason...')
+            .setRequired(customId[0] === 'report' ? true : false);
+        const row = new ActionRowBuilder().addComponents(input);
+        modal.addComponents(row);
+        interaction.showModal(modal);
         
     } else if (interaction.isModalSubmit()) {
         const customId = interaction.customId.split('_');
-        if (interaction.customId === 'report') {
-            
+        if (customId[0] === 'report') {
             await interaction.deferReply({ ephemeral: true });
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
@@ -224,15 +188,15 @@ client.on('interaction', async (interaction, raw) => {
                 ephemeral: true
             })
             
-        } else if (customId[0] === 'accept') {
+        } else {
             await interaction.deferReply({ ephemeral: true });
             const dm = await createDM(customId[1]);
             const text = interaction.fields.getTextInputValue('input');
             const embed = new EmbedBuilder()
-                .setColor('Green')
+                .setColor(customId[0] === 'accept' ? 'Green' : 'Red')
                 .setTimestamp()
                 .setThumbnail(interaction.user.avatarURL())
-                .setTitle(`Your report was accepted`)
+                .setTitle(`Your report was ${customId[0] === 'accept' ? 'accepted' : 'declined'}`)
                 .setDescription(interaction.message.embeds[0].description)
                 .addFields(
                     { name: 'Reason', value: `>>> ${text?.slice(0, 1997)  || 'No reason provided'}` },
@@ -243,45 +207,16 @@ client.on('interaction', async (interaction, raw) => {
                     new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
                             .setCustomId('-')
-                            .setStyle(ButtonStyle.Success)
-                            .setLabel('Report Accepted')
+                            .setStyle(customId[0] === 'accept' ? ButtonStyle.Success : ButtonStyle.Danger)
+                            .setLabel(`Report ${customId[0] === 'accept' ? 'Accepted' : 'Declined'}`)
                             .setDisabled(true)
                     )
                 ]
             });
             const msg = await createMessage(dm?.id, { embeds: [embed] });
-            if (msg?.code === 50007) return interaction.editReply('Report accepted, cannot send dm to this user');
-            return interaction.editReply('Report accepted');
-            
-        } else if (customId[0] === 'decline') {
-            await interaction.deferReply({ ephemeral: true });
-            const dm = await createDM(customId[1]);
-            const text = interaction.fields.getTextInputValue('input');
-            const embed = new EmbedBuilder()
-                .setColor('Red')
-                .setTimestamp()
-                .setThumbnail(interaction.user.avatarURL())
-                .setTitle(`Your report was declined`)
-                .setDescription(interaction.message.embeds[0].description)
-                .addFields(
-                    { name: 'Reason', value: `>>> ${text?.slice(0, 1997)  || 'No reason provided'}` },
-                    { name: 'Moderator', value: interaction.user.username },
-                );
-            await editMessage(interaction.channelId, interaction.message?.id, {
-                components: [
-                    new ActionRowBuilder().addComponents(
-                        new ButtonBuilder()
-                            .setCustomId('-')
-                            .setStyle(ButtonStyle.Danger)
-                            .setLabel('Report Declined')
-                            .setDisabled(true)
-                    )
-                ]
-            });
-            const msg = await createMessage(dm?.id, { embeds: [embed] });
-            if (msg?.code === 50007) return interaction.editReply('Report declined, cannot send dm to this user');
-            return interaction.editReply('Report declined');
-        }
+            if (msg?.code === 50007) return interaction.editReply(`Report ${customId[0] === 'accept' ? 'Accepted' : 'Declined'}, cannot send dm to this user`);
+            return interaction.editReply(`Report ${customId[0] === 'accept' ? 'Accepted' : 'Declined'}`);
+        };
     } else { return interaction.reply({ content: '🚫  Unknown interaction', ephemeral: true }); }
 });
 
