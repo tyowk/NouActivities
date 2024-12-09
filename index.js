@@ -197,7 +197,7 @@ client.on('interaction', async (interaction, raw, ping) => {
                     .setTitle(`Your report was ${customId[0] === 'accept' ? 'accepted' : 'declined'}`)
                     .setDescription(interaction.message.embeds[0].description)
                     .addFields(
-                        { name: 'Reason', value: `>>> ${text?.slice(0, 1997)  || 'No reason provided'}` },
+                        { name: 'Reason', value: `>>> ${text?.slice(0, 1020)  || 'No reason provided'}` },
                         { name: 'Moderator', value: interaction.user.username },
                     )
             ]});
