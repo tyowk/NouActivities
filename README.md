@@ -1,6 +1,6 @@
 # NouActivities
 
-A simple, open-source Discord activities bot, built with HTTP interactions.
+NouActivities is a simple, open-source Discord activities bot built using HTTP interactions.
 
 ## Installation
 
@@ -21,13 +21,17 @@ Follow these steps to install and run the bot:
 
 3. **Create a `.env` file** in the root of the project directory with the following contents:
 
-   ```plaintext
+   ```bash
    TOKEN="your-bot-token-here"
-   REPORT="report-channel-log"
-   KEY="your-bot-public-key"
+   REPORT="your-report-channel-id-here"
+   KEY="your-bot-public-key-here"
+   PORT="your-server-port-here"
    ```
 
-   Replace `your-bot-token-here` with your Discord bot token and `your-bot-public-key` with your bot's public key. Also, specify the `REPORT` channel ID where logs will be reported.
+   - Replace `your-bot-token-here` with your Discord bot token (you can get this from the Discord Developer Portal).
+   - Replace `your-report-channel-id-here` with the channel ID where you want activity logs to be sent.
+   - Replace `your-bot-public-key-here` with your bot's public key (found in the bot's settings in the Discord Developer Portal).
+   - Set `your-server-port-here` to the port number your bot will run on.
 
 4. **Run the bot**:
 
@@ -35,14 +39,22 @@ Follow these steps to install and run the bot:
    npm start
    ```
 
+5. **Configure your bot’s interaction endpoint**:
+
+   In the **[Discord Developer Portal](https://discord.com/developers/applications)**, go to your bot's application settings, and navigate to the **Interactions Endpoint URL** section. Set the **Interaction URL** to:
+
+   ```bash
+   https://<domain.com>/interactions
+   ```
+
 ## Commands
 
 Here are some of the available commands:
 
-- `/activities` - Displays available activities.
-- `/help` - Shows the list of commands and their usage.
-- `/invite` - Provides an invite link to add the bot to your server.
-- `/ping` - Checks if the bot is responsive.
+- `/activities`: Displays a list of available activities.
+- `/help`: Shows a list of all commands and their usage.
+- `/invite`: Provides an invite link to add the bot to your server.
+- `/ping`: Checks if the bot is responsive.
 
 ## Contributing
 
@@ -69,7 +81,7 @@ We welcome contributions to improve the bot! To contribute:
 
 5. Open a pull request to the main repository.
 
-Please ensure that your code follows the existing coding style and passes any tests or linters that may be in place.
+Please ensure that your code follows the existing coding style and passes any tests or linters in place.
 
 ## License
 
@@ -78,5 +90,5 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 ## Acknowledgements
 
 - [discord.js](https://discord.js.org/): The library used to interact with the Discord API.
-- [discord-interactions](https://www.npmjs.com/package/discord-interactions): A library that provides an easy interface for working with slash commands and Discord interactions.
+- [discord-interactions](https://www.npmjs.com/package/discord-interactions): A library that simplifies working with slash commands and Discord interactions.
 - [express](https://www.npmjs.com/package/express): A fast and minimalist web framework for Node.js.
