@@ -1,12 +1,12 @@
 {
     "version": 2,
     "builds": [{
-        "src": "activities/index.js",
+        "src": "index.js",
         "use": "@vercel/node"
     }],
     "routes": [{
         "src": "/(.*)",
-        "dest": "activities/index.js"
+        "dest": "index.js"
     }],
     "git": {
         "deploymentEnabled": {
