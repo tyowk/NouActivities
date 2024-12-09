@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express(); 
-const body = require('./structures/commands.js');
 const { verifyKeyMiddleware } = require('discord-interactions');
 require('dotenv').config();
 
@@ -15,8 +14,6 @@ const { createMessage,
 const { ModalBuilder,
        TextInputBuilder,
        TextInputStyle,
-       REST,
-       Routes,
        EmbedBuilder,
        Client,
        ActionRowBuilder,
@@ -295,8 +292,9 @@ app.post('/interactions', verifyKeyMiddleware(process.env.KEY), async (req, res)
     let interaction;
     
     if (raw.type === 1) {
-           await registerCommands();
-           return res.status(200).json({ type: 1 });
+        const cmd = await registerCommands();
+        if (cmd.message) return res.status(401);
+        return res.status(200).json({ type: 1 });
     }
     if (raw.type === 2) interaction = new ChatInputCommandInteraction(client, raw);
     if (raw.type === 3) interaction = new MessageComponentInteraction(client, raw);
