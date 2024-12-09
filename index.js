@@ -47,7 +47,11 @@ client.on('interaction', async (interaction, raw) => {
                         .setLabel('Support')
                         .setURL('https://noujs.my.id/discord')
                         .setStyle(ButtonStyle.Link)
-                        .setDisabled(true)
+                        .setDisabled(true),
+                    new ButtonBuilder()
+                        .setLabel('Source')
+                        .setURL('https://github.com/tyowk/NouActivities')
+                        .setStyle(ButtonStyle.Link)
                 );
                 
                 return interaction.reply({
@@ -292,7 +296,7 @@ app.put('/register', async (req, res) => {
     } else {
         try {
             const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-            const response = await rest.put(Routes.applicationCommands('1305829720213950474'), { body });
+            const response = await rest.put(Routes.applicationCommands(process.env.ID), { body });
             return res.status(200).json({
                 code: 200,
                 message: 'OK',
