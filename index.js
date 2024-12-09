@@ -1,21 +1,19 @@
 const express = require('express');
 const app = express(); 
-const body = require('./structures/commands.js');
-const { verifyKeyMiddleware } = require('discord-interactions');
 require('dotenv').config();
 
 const { createMessage,
        editMessage,
        createDM,
        getChannel,
-       createInvite
+       createInvite,
+       verify,
+       registerCommands
       } = require('./structures/functions.js');
 
 const { ModalBuilder,
        TextInputBuilder,
        TextInputStyle,
-       REST,
-       Routes,
        EmbedBuilder,
        Client,
        ActionRowBuilder,
@@ -288,40 +286,33 @@ client.on('interaction', async (interaction, raw) => {
 });
 
 app.put('/register', async (req, res) => {
-    if (req.headers.authorization !== process.env.TOKEN) {
+    if (req.header('Authorization') != process.env.TOKEN) {
         res.status(401).json({
-                code: 401,
-                message: 'Unauthorized'
-            });
+            code: 538401,
+            message: 'Client Unauthorized',
+        });
     } else {
-        try {
-            const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-            const response = await rest.put(Routes.applicationCommands(process.env.ID), { body });
-            return res.status(200).json({
-                code: 200,
-                message: 'OK',
-                response
-            });
-        } catch (err) {
-            res.status(500).json({
-                code: 500,
-                message: err.message
-            });
-        };
+        const response = await registerCommands();
+        if (response) return res.status(200).json({
+            code: 538200,
+            message: 'OK',
+            response
+        });
+        
+        return res.status(500).json({
+            code: 538500,
+            message: 'Internal Server Error'
+        });
     };
 });
 
 app.post('/ping', (req, res) => { return res.status(200).json({ code: 200, message: 'OK' })});
-app.post('/*', verifyKeyMiddleware(process.env.KEY), async (req, res) => {
+app.post('/*', verify(process.env.KEY), async (req, res) => {
     const raw = req.body;
-    if (!raw) return res.status(200).json({ type: 1 });
     let interaction;
-    
-    if (raw.type === 1) return res.status(200).json({ type: 1 });
     if (raw.type === 2) interaction = new ChatInputCommandInteraction(client, raw);
     if (raw.type === 3) interaction = new MessageComponentInteraction(client, raw);
     if (raw.type === 5) interaction = new ModalSubmitInteraction(client, raw);
-    
     if (!interaction) return res.status(200).json({ type: 4, data: { content: '🚫  Unknown interaction', flags: 64 }});
     res.status(200);
     client.emit('interaction', interaction, raw);
