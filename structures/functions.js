@@ -1,6 +1,3 @@
-const { REST, Routes } = require('discord.js');
-const body = require('./commands.js');
-
 async function createMessage(channelId, options) {
     const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
         method: 'POST',
@@ -91,20 +88,10 @@ async function createInvite(channelId, appId) {
     return data;
 };
 
-async function registerCommands() {
-    try {
-        const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-        return await rest.put(Routes.applicationCommands(process.env.ID), { body });
-    } catch (err) {
-        return err;
-    };
-};
-
 module.exports = {
     createMessage,
     editMessage,
     createDM,
     getChannel,
-    createInvite,
-    registerCommands
+    createInvite
 };
