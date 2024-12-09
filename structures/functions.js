@@ -92,8 +92,10 @@ async function createInvite(channelId, appId) {
 
 module.exports = {
     createMessage,
+    deleteMessage,
     editMessage,
     createDM,
+    getUser,
     getChannel,
     createInvite,
     verify,
