@@ -308,7 +308,7 @@ app.put('/register', async (req, res) => {
 });
 
 app.post('/ping', (req, res) => { return res.status(200).json({ code: 200, message: 'OK' })});
-app.post('/*', verifyKeyMiddleware(process.env.KEY), async (req, res) => {
+app.post('/interactions', verifyKeyMiddleware(process.env.KEY), async (req, res) => {
     const raw = req.body;
     if (!raw) return res.status(200).json({ type: 4, data: { content: '🚫  Unknown interaction', flags: 64 }});
     let interaction;
