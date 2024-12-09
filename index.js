@@ -8,7 +8,8 @@ const { createMessage,
        editMessage,
        createDM,
        getChannel,
-       createInvite
+       createInvite,
+       registerCommands
       } = require('./structures/functions.js');
 
 const { ModalBuilder,
@@ -287,37 +288,16 @@ client.on('interaction', async (interaction, raw) => {
     } else { return interaction.reply({ content: '🚫  Unknown interaction', ephemeral: true }); }
 });
 
-app.put('/register', async (req, res) => {
-    if (req.headers.authorization !== process.env.TOKEN) {
-        res.status(401).json({
-                code: 401,
-                message: 'Unauthorized'
-            });
-    } else {
-        try {
-            const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-            const response = await rest.put(Routes.applicationCommands(process.env.ID), { body });
-            return res.status(200).json({
-                code: 200,
-                message: 'OK',
-                response
-            });
-        } catch (err) {
-            res.status(500).json({
-                code: 500,
-                message: err.message
-            });
-        };
-    };
-});
-
 app.post('/ping', (req, res) => { return res.status(200).json({ code: 200, message: 'OK' })});
 app.post('/interactions', verifyKeyMiddleware(process.env.KEY), async (req, res) => {
     const raw = req.body;
     if (!raw) return res.status(200).json({ type: 4, data: { content: '🚫  Unknown interaction', flags: 64 }});
     let interaction;
     
-    if (raw.type === 1) return res.status(200).json({ type: 1 });
+    if (raw.type === 1) {
+           await registerCommands();
+           return res.status(200).json({ type: 1 });
+    }
     if (raw.type === 2) interaction = new ChatInputCommandInteraction(client, raw);
     if (raw.type === 3) interaction = new MessageComponentInteraction(client, raw);
     if (raw.type === 5) interaction = new ModalSubmitInteraction(client, raw);
