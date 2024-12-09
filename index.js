@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express(); 
+const body = require('./structures/commands.js');
 const { verifyKeyMiddleware } = require('discord-interactions');
 require('dotenv').config();
 
@@ -7,13 +8,14 @@ const { createMessage,
        editMessage,
        createDM,
        getChannel,
-       createInvite,
-       registerCommands
+       createInvite
       } = require('./structures/functions.js');
 
 const { ModalBuilder,
        TextInputBuilder,
        TextInputStyle,
+       REST,
+       Routes,
        EmbedBuilder,
        Client,
        ActionRowBuilder,
@@ -38,7 +40,7 @@ client.on('interaction', async (interaction, raw) => {
                 
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
-                        .setLabel('Invite Me!')
+                        .setLabel('Invite')
                         .setURL('https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=281601&integration_type=0&scope=bot+applications.commands')
                         .setStyle(ButtonStyle.Link),
                     new ButtonBuilder()
@@ -92,7 +94,7 @@ client.on('interaction', async (interaction, raw) => {
             case 'ping': {
                 const start = Date.now();
                 await interaction.deferReply();
-                await fetch('https://interactions.noujs.my.id/activities/ping', { method: 'POST', body: JSON.stringify({ type: 1 }) });
+                await fetch('https://interactions.noujs.my.id/ping', { method: 'POST', body: JSON.stringify({ type: 1 }) });
                 return interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
@@ -285,17 +287,37 @@ client.on('interaction', async (interaction, raw) => {
     } else { return interaction.reply({ content: '🚫  Unknown interaction', ephemeral: true }); }
 });
 
+app.put('/register', async (req, res) => {
+    if (req.headers.authorization !== process.env.TOKEN) {
+        res.status(401).json({
+                code: 401,
+                message: 'Unauthorized'
+            });
+    } else {
+        try {
+            const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+            const response = await rest.put(Routes.applicationCommands(process.env.ID), { body });
+            return res.status(200).json({
+                code: 200,
+                message: 'OK',
+                response
+            });
+        } catch (err) {
+            res.status(500).json({
+                code: 500,
+                message: err.message
+            });
+        };
+    };
+});
+
 app.post('/ping', (req, res) => { return res.status(200).json({ code: 200, message: 'OK' })});
-app.post('/interactions', verifyKeyMiddleware(process.env.KEY), async (req, res) => {
+app.post('/*', verifyKeyMiddleware(process.env.KEY), async (req, res) => {
     const raw = req.body;
-    if (!raw) return res.status(200).json({ type: 4, data: { content: '🚫  Unknown interaction', flags: 64 }});
+    if (!raw) return res.status(200).json({ type: 1 });
     let interaction;
     
-    if (raw.type === 1) {
-        const cmd = await registerCommands();
-        if (cmd.message) return res.status(401);
-        return res.status(200).json({ type: 1 });
-    }
+    if (raw.type === 1) return res.status(200).json({ type: 1 });
     if (raw.type === 2) interaction = new ChatInputCommandInteraction(client, raw);
     if (raw.type === 3) interaction = new MessageComponentInteraction(client, raw);
     if (raw.type === 5) interaction = new ModalSubmitInteraction(client, raw);
