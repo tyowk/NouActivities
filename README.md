@@ -29,7 +29,7 @@ Follow these steps to install and run the bot:
    ```
 
    - Replace `your-bot-token-here` with your Discord bot token (you can get this from the Discord Developer Portal).
-   - Replace `your-report-channel-id-here` with the channel ID where you want activity logs to be sent.
+   - Replace `your-report-channel-id-here` with the channel ID where you want report logs to be sent.
    - Replace `your-bot-public-key-here` with your bot's public key (found in the bot's settings in the Discord Developer Portal).
    - Set `your-server-port-here` to the port number your bot will run on.
 
