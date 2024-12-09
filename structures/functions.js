@@ -13,15 +13,6 @@ async function createMessage(channelId, options) {
     return data;
 };
 
-async function deleteMessage(channelId, messageId) {
-    await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`, {
-        method: 'DELETE',
-        headers: {
-            Authorization: `Bot ${process.env.TOKEN}`,
-        },
-    });
-};
-
 async function editMessage(channelId, messageId, options) {
     const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`, {
         method: 'PATCH',
@@ -45,18 +36,6 @@ async function createDM(userId) {
         body: JSON.stringify({
             recipient_id: userId
         })
-    });
-    const data = await response.json();
-    return data;
-};
-
-async function getUser(userId) {
-    const response = await fetch(`https://discord.com/api/v10/users/${userId}`, {
-        method: 'GET',
-        headers: {
-            Authorization: `Bot ${process.env.TOKEN}`,
-            'Content-Type': 'application/json',
-        }
     });
     const data = await response.json();
     return data;
@@ -92,10 +71,8 @@ async function createInvite(channelId, appId) {
 
 module.exports = {
     createMessage,
-    deleteMessage,
     editMessage,
     createDM,
-    getUser,
     getChannel,
     createInvite,
     verify,
