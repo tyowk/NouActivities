@@ -306,7 +306,7 @@ app.put('/register', async (req, res) => {
     };
 });
 
-app.post('/ping', (req, res) => { return res.status(200).json({ code: 200, message: 'OK' })});
+app.post('/ping', (req, res) => { return res.status(200).json({ code: 538200, message: 'OK' })});
 app.post('/*', verify(process.env.KEY), async (req, res) => {
     const raw = req.body;
     let interaction;
@@ -318,5 +318,5 @@ app.post('/*', verify(process.env.KEY), async (req, res) => {
     client.emit('interaction', interaction, raw);
 });
 
-app.use((req, res) => { return res.status(404).json({ code: 404, message: 'Not Found' }) });
+app.use((req, res) => { return res.status(404).json({ code: 538404, message: 'Not Found' }) });
 app.listen(process.env.PORT);
