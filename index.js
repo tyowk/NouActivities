@@ -217,7 +217,7 @@ app.put('/register', async (req, res) => {
     });
 });
 
-app.post('/*', verify(process.env.KEY), async (req, res) => {
+app.post('/interactions', verify(process.env.KEY), async (req, res) => {
     let ping = getTimestamp(req.body.id);
     ping = Date.now() - ping;
     const raw = req.body;
