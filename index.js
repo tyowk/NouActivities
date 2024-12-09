@@ -218,7 +218,6 @@ app.put('/register', async (req, res) => {
     });
 });
 
-app.post('/ping', (req, res) => { return res.status(200).json({ code: 538200, message: 'OK' })});
 app.post('/*', verify(process.env.KEY), async (req, res) => {
     let ping = getTimestamp(req.body.id);
     ping = Date.now() - ping;
