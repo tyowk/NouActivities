@@ -46,7 +46,7 @@ Follow these steps to install and run the bot:
    ```bash
    https://<domain.com>/interactions
    ```
-
+   ![setup.png](https://github.com/user-attachments/assets/046627ea-234b-4d13-8329-444037d260ec)
 ## Commands
 
 Here are some of the available commands:
