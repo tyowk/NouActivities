@@ -148,7 +148,7 @@ client.on('interaction', async (interaction, raw, ping) => {
                 new EmbedBuilder()
                     .setColor('#3b3ee3')
                     .setTimestamp()
-                    .setDescription(`>>> ${text?.slice(0, 3997) || 'null'}`)
+                    .setDescription(`>>> ${text?.slice(0, 3996) || 'null'}`)
                     .setThumbnail(interaction.user.avatarURL())
                     .setTitle(`New Report Submitted by ${interaction.user.username}`)
                     .addFields(
@@ -176,7 +176,7 @@ client.on('interaction', async (interaction, raw, ping) => {
             await interaction.deferReply({ ephemeral: true });
             const dm = await createDM(customId[1]);
             const text = interaction.fields.getTextInputValue('input');
-            interaction.message.embeds[0].fields.push({ name: '<:dot:1315241311988879403>  Reason', value: text?.slice(0, 2000)  || 'No reason provided' });
+            interaction.message.embeds[0].fields.push({ name: '<:dot:1315241311988879403>  Reason', value: text?.slice(0, 1024)  || 'No reason provided' });
             await editMessage(interaction.channelId, interaction.message?.id, {
                 embeds: interaction.message.embeds,
                 components: [
@@ -184,7 +184,7 @@ client.on('interaction', async (interaction, raw, ping) => {
                         new ButtonBuilder()
                             .setCustomId('-')
                             .setStyle(customId[0] === 'accept' ? ButtonStyle.Success : ButtonStyle.Danger)
-                            .setLabel(`Report ${customId[0] === 'accept' ? 'Accepted' : 'Declined'}`)
+                            .setLabel(`Report ${customId[0] === 'accept' ? 'Accepted' : 'Declined'} by ${interaction.user.username}`)
                             .setDisabled(true)
                     )
                 ]
