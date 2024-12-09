@@ -11,16 +11,16 @@ async function createMessage(channelId, options) {
     });
     const data = await response.json();
     return data;
-}
+};
 
-/*async function deleteMessage(channelId, messageId) {
+async function deleteMessage(channelId, messageId) {
     await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`, {
         method: 'DELETE',
         headers: {
             Authorization: `Bot ${process.env.TOKEN}`,
         },
     });
-};*/
+};
 
 async function editMessage(channelId, messageId, options) {
     const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`, {
@@ -40,7 +40,7 @@ async function createDM(userId) {
         method: 'POST',
         headers: {
             Authorization: `Bot ${process.env.TOKEN}`,
-            "Content-Type": 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             recipient_id: userId
@@ -48,9 +48,9 @@ async function createDM(userId) {
     });
     const data = await response.json();
     return data;
-}
+};
 
-/*async function getUser(userId) {
+async function getUser(userId) {
     const response = await fetch(`https://discord.com/api/v10/users/${userId}`, {
         method: 'GET',
         headers: {
@@ -60,19 +60,19 @@ async function createDM(userId) {
     });
     const data = await response.json();
     return data;
-}*/
+};
 
 async function getChannel(channelId) {
     const response = await fetch(`https://discord.com/api/v10/channels/${channelId}`, {
         method: 'GET',
         headers: {
             Authorization: `Bot ${process.env.TOKEN}`,
-            "Content-Type": 'application/json',
+            'Content-Type': 'application/json',
         }
     });
     const data = await response.json();
     return data;
-}
+};
 
 async function createInvite(channelId, appId) {
     const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/invites`, {
