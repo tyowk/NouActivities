@@ -144,7 +144,7 @@ client.on('interaction', async (interaction, raw, ping) => {
         if (customId[0] === 'report') {
             await interaction.deferReply({ ephemeral: true });
             const text = interaction.fields.getTextInputValue('input');
-            await createMessage(process.env.REPORT, { embeds: [
+            createMessage(process.env.REPORT, { embeds: [
                 new EmbedBuilder()
                     .setColor('#3b3ee3')
                     .setTimestamp()
@@ -176,7 +176,9 @@ client.on('interaction', async (interaction, raw, ping) => {
             await interaction.deferReply({ ephemeral: true });
             const dm = await createDM(customId[1]);
             const text = interaction.fields.getTextInputValue('input');
+            interaction.message.embeds[0].fields.push({ name: '<:dot:1315241311988879403>  Reason', value: text?.slice(0, 2000)  || 'No reason provided' });
             await editMessage(interaction.channelId, interaction.message?.id, {
+                embeds: interaction.message.embeds,
                 components: [
                     new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
