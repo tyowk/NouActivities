@@ -218,16 +218,15 @@ app.put('/register', async (req, res) => {
 });
 
 app.post('/interactions', verify(process.env.KEY), async (req, res) => {
-    let ping = getTimestamp(req.body.id);
-    ping = Date.now() - ping;
-    const raw = req.body;
+    if (!req.body) return;
+    let ping = Date.now() - (getTimestamp(req.body.id) || 0);
     let interaction;
-    if (raw.type === 2) interaction = new ChatInputCommandInteraction(client, raw);
-    if (raw.type === 3) interaction = new MessageComponentInteraction(client, raw);
-    if (raw.type === 5) interaction = new ModalSubmitInteraction(client, raw);
+    if (req.body.type === 2) interaction = new ChatInputCommandInteraction(client, req.body);
+    if (req.body.type === 3) interaction = new MessageComponentInteraction(client, req.body);
+    if (req.body.type === 5) interaction = new ModalSubmitInteraction(client, req.body);
     if (!interaction) return res.status(200).json({ type: 4, data: { content: '🚫  Unknown interaction', flags: 64 }});
     res.status(200);
-    client.emit('interaction', interaction, raw, ping);
+    client.emit('interaction', interaction, req.body, ping);
 });
 
 app.use((req, res) => { return res.status(404).json({ code: 538404, message: 'Not Found' }) });
