@@ -1,3 +1,5 @@
+const { verify, registerCommands } = require('./verify.js');
+
 async function createMessage(channelId, options) {
     const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
         method: 'POST',
@@ -93,5 +95,7 @@ module.exports = {
     editMessage,
     createDM,
     getChannel,
-    createInvite
+    createInvite,
+    verify,
+    registerCommands
 };
