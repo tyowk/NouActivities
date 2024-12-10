@@ -1,9 +1,9 @@
 const express = require('express');
-const app = express(); 
+const app = express();
 require('dotenv').config();
 
 const {
-    createMessage, editMessage, createDM, getChannel,
+    createMessage, editMessage, createDM, getUser,
     createInvite, verify, registerCommands, getTimestamp
 } = require('./structures/functions.js');
 
@@ -15,6 +15,7 @@ const {
 } = require('discord.js');
 
 const client = new Client({ intents: Object.values(GatewayIntentBits) });
+const inviteURL = 'https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=549757142017&scope=bot%20applications.commands';
 client.on('interaction', async (interaction, raw, ping) => {
     if (interaction.isChatInputCommand()) {
         switch (interaction.commandName?.toLowerCase()) {  
@@ -30,7 +31,7 @@ client.on('interaction', async (interaction, raw, ping) => {
                         new ActionRowBuilder().addComponents(
                             new ButtonBuilder()
                                 .setLabel('Invite')
-                                .setURL('https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=281601&integration_type=0&scope=bot+applications.commands')
+                                .setURL(inviteURL)
                                 .setStyle(ButtonStyle.Link),
                             new ButtonBuilder()
                                 .setLabel('Support')
@@ -49,14 +50,10 @@ client.on('interaction', async (interaction, raw, ping) => {
                 if (!interaction.inGuild()) return interaction.reply({ content: '🚫  Uhh... This command cannot be used in DM', ephemeral: true });
                 const channelId = raw.data.options[1].value;
                 const appId = raw.data.options[0].value;
-                const channel = await getChannel(channelId);
-                if (channel.code === 50001) return interaction.reply({ content: '🚫  Uh oh... I don\'t have access to the channel', ephemeral: true });
-                if (channel.type !== 2) return interaction.reply({ content: '🚫  Nuh uh uh, The channel type must be a voice channel', ephemeral: true });
-                
                 try {
-                    const invite = await createInvite(channel.id, appId);
-                    if (invite.code === 50013 || !invite) return interaction.reply({ content: '🚫  Hmm... I don\'t have enough permissions', ephemeral: true });
-                    if (!isNaN(invite.code) || invite.code === 50035) return interaction.reply({ content: '🚫  Well, This is awkward... Bad request', ephemeral: true });
+                    const invite = await createInvite(channelId, appId);
+                    if (invite.code === 50013 || !invite) return interaction.reply({ content: '🚫  Hmm... I don\'t have enough permissions\nMake sure I have `ViewChannel, CreateInvite` permissions', ephemeral: true });
+                    if (invite.code === 50035) return interaction.reply({ content: '🚫  Well, This is awkward... Bad request', ephemeral: true });
                     return interaction.reply({
                         content: `<:dot:1315241311988879403>  **${invite.target_application?.name}**: https://discord.gg/${invite.code}`,
                         components: [
@@ -103,7 +100,7 @@ client.on('interaction', async (interaction, raw, ping) => {
                         new ActionRowBuilder().addComponents(
                             new ButtonBuilder()
                                 .setLabel('Invite')
-                                .setURL('https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=281601&integration_type=0&scope=bot+applications.commands')
+                                .setURL(inviteURL)
                                 .setStyle(ButtonStyle.Link),
                             new ButtonBuilder()
                                 .setLabel('Support')
