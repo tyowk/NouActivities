@@ -42,15 +42,6 @@ async function getUser(userId) {
     return data;
 }
 
-async function getChannel(channelId) {
-    const response = await fetch(`https://discord.com/api/v10/channels/${channelId}`, {
-        method: 'GET',
-        headers
-    });
-    const data = await response.json();
-    return data;
-}
-
 async function createInvite(channelId, appId) {
     const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/invites`, {
         method: 'POST',
@@ -71,7 +62,7 @@ module.exports = {
     createMessage,
     editMessage,
     createDM,
-    getChannel,
+    getUser,
     createInvite,
     verify,
     registerCommands,
