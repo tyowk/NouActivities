@@ -15,7 +15,7 @@ const {
 } = require('discord.js');
 
 const client = new Client({ intents: Object.values(GatewayIntentBits) });
-const inviteURL = 'https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=549757142017&scope=bot%20applications.commands';
+const inviteURL = 'https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=549756077057&integration_type=0&scope=bot+applications.commands';
 client.on('interaction', async (interaction, raw, ping) => {
     if (interaction.isChatInputCommand()) {
         switch (interaction.commandName?.toLowerCase()) {  
