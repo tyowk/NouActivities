@@ -228,5 +228,31 @@ app.post('/interactions', verify(process.env.KEY), async (req, res) => {
     client.emit('interaction', interaction, req.body, ping);
 });
 
+app.post('/webhook', express.json(), async (req, res) => {
+    if (req.header('Authorization') !== process.env.AUTH) return res.status(200).json({ code: 538401, message: 'Unauthorized' });
+    const user = await getUser(req.body?.user);
+    if (!user?.id) return res.status(404).json({ code: 538404, message: 'Not Found' });
+    res.status(200).json({ code: 538200, message: 'OK' });
+    createMessage(process.env.VOTE, {
+        content: `<@${user.id}>`,
+        embeds: [
+            new EmbedBuilder()
+                .setTitle(`${user.username} just voted me!`)
+                .setThumbnail(user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=4096` : `https://cdn.discordapp.com/embed/avatars/0.png`)
+                .setDescription(`✨  Thanks for voting for me, ${user.username}!\nYou can vote again in 12 hours.`)
+                .setColor('#3b3ee3')
+                .setTimestamp()
+        ],
+        components: [
+            new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setLabel('Vote me on Top.gg!')
+                    .setURL(`https://top.gg/bot/1305829720213950474`)
+                    .setStyle(ButtonStyle.Link)
+            )
+        ]
+    });
+});
+
 app.use((req, res) => { return res.status(404).json({ code: 538404, message: 'Not Found' }) });
 app.listen(process.env.PORT);
