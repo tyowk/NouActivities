@@ -67,6 +67,14 @@ Here are some of the available commands:
 - `/invite`: Provides an invite link to add the bot to your server.
 - `/ping`: Checks if the bot is responsive.
 
+## Endpoints
+
+Here are some of the available endpoints:
+
+- **`PUT`** `/webhook`: Register client slash commands (optional, because when the client receives a PING from discord, the slash command will be automatically registered).
+- **`POST`** `/interactions`: Accept all POST requests from Discord interactions.
+- **`POST`** `/webhook`: Accept all POST requests from Top.gg.
+
 ## Contributing
 
 We welcome contributions to improve the bot! To contribute:
