@@ -71,9 +71,9 @@ Here are some of the available commands:
 
 Here are some of the available endpoints:
 
-- **`PUT`** `/webhook`: Register client slash commands (optional, because when the client receives a PING from discord, the slash command will be automatically registered).
+- **`PUT`** `/register`: Register client slash commands (optional, because when the client receives a PING from discord, the slash command will be automatically registered).
 - **`POST`** `/interactions`: Accept all POST requests from Discord interactions.
-- **`POST`** `/webhook`: Accept all POST requests from Top.gg.
+- **`POST`** `/webhook`: Accept all POST requests from Top.gg vote webhook.
 
 ## Contributing
 
