@@ -8,7 +8,7 @@ NouActivities is a simple, open-source Discord activities bot built using HTTP i
 
 **Vercel Deploy:**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftyowk%2FNouActivities%2Ftree%2Fmain&env=TOKEN,KEY,ID,REPORT&project-name=activities&repository-name=activities)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftyowk%2FNouActivities%2Ftree%2Fmain&env=TOKEN,KEY,ID,REPORT,VOTE,AUTH&project-name=activities&repository-name=activities)
 
 **Follow these steps to install and run the bot:**
 1. **Clone the repository**:
@@ -32,6 +32,10 @@ NouActivities is a simple, open-source Discord activities bot built using HTTP i
    KEY="your-bot-public-key-here"
    ID="your-bot-client-id"
    PORT="your-server-port-here"
+   
+   # optional
+   VOTE="your-vote-channel-logs"
+   AUTH="topgg-webhook-auth"
    ```
 
    - Replace `your-bot-token-here` with your Discord bot token (you can get this from the Discord Developer Portal).
