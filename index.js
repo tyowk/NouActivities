@@ -231,15 +231,15 @@ app.post('/interactions', verify(process.env.KEY), async (req, res) => {
 app.post('/webhook', express.json(), async (req, res) => {
     if (req.header('Authorization') !== process.env.AUTH) return res.status(200).json({ code: 538401, message: 'Unauthorized' });
     const user = await getUser(req.body?.user);
-    if (!user?.id) return res.status(404).json({ code: 538404, message: 'Not Found' });
+    if (!user || !user?.id) return res.status(404).json({ code: 538404, message: 'Not Found' });
     res.status(200).json({ code: 538200, message: 'OK' });
     createMessage(process.env.VOTE, {
         content: `<@${user.id}>`,
         embeds: [
             new EmbedBuilder()
-                .setTitle(`${user.username} just voted me!`)
+                .setTitle(`${user.global_name || user.username} Just Voted Me!`)
                 .setThumbnail(user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=4096` : `https://cdn.discordapp.com/embed/avatars/0.png`)
-                .setDescription(`✨  Thanks for voting for me, ${user.username}!\nYou can vote again in 12 hours.`)
+                .setDescription(`Thanks for voting for me, <@${user.id}>! Your support keeps this bot running and improving every day. We're working hard to bring you even better features.\n\nYou can vote again <t:${((Date.now() + 43200000) / 1000).toFixed()}:R>`)
                 .setColor('#3b3ee3')
                 .setTimestamp()
         ],
@@ -247,8 +247,9 @@ app.post('/webhook', express.json(), async (req, res) => {
             new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
                     .setLabel('Vote me on Top.gg!')
-                    .setURL(`https://top.gg/bot/1305829720213950474`)
+                    .setURL(`https://top.gg/bot/${process.env.ID}/vote`)
                     .setStyle(ButtonStyle.Link)
+                    .setEmoji('<:topgg:1322153742581104660>')
             )
         ]
     });
