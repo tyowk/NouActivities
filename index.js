@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const path = require('path');
 require('dotenv').config();
 
 // util functions
@@ -216,6 +215,4 @@ app.post('/webhook', express.json(), async (req, res) => {
     )]});
 });
 
-// others
-app.use((req, res) => res.sendFile(path.join(__dirname, 'website', '404.html')));
 app.listen(process.env.PORT);
