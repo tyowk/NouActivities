@@ -1,62 +1,56 @@
 const { verify, registerCommands } = require('./verify.js');
 const headers = { Authorization: `Bot ${process.env.TOKEN}`, 'Content-Type': 'application/json', 'User-Agent': 'NouJS' };
 
+// handling API request
+async function apiRequest(endpoint, method = 'GET', body = null) {
+    const response = await fetch(`https://discord.com/api/v10${endpoint}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : null,
+    });
+    return response.json();
+}
+
+// sending messages
 async function createMessage(channelId, options) {
-    const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(options),
-    });
-    const data = await response.json();
-    return data;
+    return apiRequest(`/channels/${channelId}/messages`, 'POST', options);
 }
 
+// editing messages
 async function editMessage(channelId, messageId, options) {
-    const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify(options),
-    });
-    const data = await response.json();
-    return data;
-};
+    return apiRequest(`/channels/${channelId}/messages/${messageId}`, 'PATCH', options);
+}
 
+// creating DM
 async function createDM(userId) {
-    const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-            recipient_id: userId
-        })
-    });
-    const data = await response.json();
-    return data;
+    return apiRequest('/users/@me/channels', 'POST', { recipient_id: userId });
 }
 
+// retrieve user info by id
 async function getUser(userId) {
-    const response = await fetch(`https://discord.com/api/v10/users/${userId}`, {
-        method: 'GET',
-        headers
-    });
-    const data = await response.json();
-    return data;
+    return apiRequest(`/users/${userId}`);
 }
 
+// create invite activity
 async function createInvite(channelId, appId) {
-    const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/invites`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-            max_age: 86400,
-            max_uses: 100,
-            unique: true,
-            target_type: 2,
-            target_application_id: appId
-        })
+    return apiRequest(`/channels/${channelId}/invites`, 'POST', {
+        max_age: 86400,
+        max_uses: 100,
+        unique: true,
+        target_type: 2,
+        target_application_id: appId,
     });
-    const data = await response.json();
-    return data;
-};
+}
+
+// reply interaction with content
+async function sendReply(interaction, content, components) {
+    await interaction.reply({ content, components });
+}
+
+// reply interaction with embeds
+async function sendEmbedReply(interaction, embed, components) {
+    await interaction.reply({ embeds: [embed], components });
+}
 
 module.exports = {
     createMessage,
@@ -66,7 +60,7 @@ module.exports = {
     createInvite,
     verify,
     registerCommands,
-    getTimestamp: (snowflake) => {
-        return Number((BigInt(snowflake) >> BigInt(22)) + 1420070400000n)
-    }
+    sendReply,
+    sendEmbedReply,
+    getTimestamp: (snowflake) => Number((BigInt(snowflake) >> BigInt(22)) + 1420070400000n),
 };
