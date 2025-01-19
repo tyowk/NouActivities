@@ -37,12 +37,12 @@ client.on('interaction', async (interaction, raw, ping) => {
         
         activities: async () => {
             try {
-                if (!interaction.inGuild()) return sendReply(interaction, '🚫 This command cannot be used in DM', []);
+                if (!interaction.inGuild()) return sendReply(interaction, '🚫 This command cannot be used in DM', [], 64);
                 const channelId = raw.data.options[1].value;
                 const appId = raw.data.options[0].value;
             
                 const invite = await createInvite(channelId, appId);
-                if (invite.code === 50013 || !invite) return sendReply(interaction, '🚫 Missing permissions\nMake sure I have `ViewChannel, CreateInvite` permissions', []);
+                if (invite.code === 50013 || !invite) return sendReply(interaction, '🚫 Missing permissions\nMake sure I have `ViewChannel, CreateInvite` permissions', [], 64);
                 if (invite.code === 50035) return sendReply(interaction, '🚫 Bad request', []);
                 await sendReply(interaction, `<:dot:1315241311988879403> **${invite.target_application?.name}**: https://discord.gg/${invite.code}`, [
                     new ActionRowBuilder().addComponents(
@@ -50,7 +50,7 @@ client.on('interaction', async (interaction, raw, ping) => {
                     )
                 ]);
             } catch (error) { 
-                await sendReply(interaction, `🚫 Error: ${error.message}`, []); 
+                await sendReply(interaction, `🚫 Error: ${error.message}`, [], 64); 
             }
         },
 
@@ -85,13 +85,13 @@ client.on('interaction', async (interaction, raw, ping) => {
     if (interaction.isChatInputCommand()) {
         const command = commands[interaction.commandName?.toLowerCase()];
         if (command) return await command();
-        return await sendReply(interaction, '🚫 Unknown command interaction', []);
+        return await sendReply(interaction, '🚫 Unknown command interaction', [], 64);
     } 
 
     // Handling button interactions
     if (interaction.isButton()) {
         const [action, userId] = interaction.customId.split('_');
-        if (action === 'report' && userId !== interaction.user.id) return await sendReply(interaction, '🚫 You cannot use this button', []);
+        if (action === 'report' && userId !== interaction.user.id) return await sendReply(interaction, '🚫 You cannot use this button', [], 64);
 
         return await interaction.showModal(new ModalBuilder()
             .setCustomId(`${action}_${interaction.user.id}`)
@@ -158,7 +158,7 @@ client.on('interaction', async (interaction, raw, ping) => {
         }
     }
 
-    return sendReply(interaction, '🚫 Unknown modal interaction', []);
+    return sendReply(interaction, '🚫 Unknown modal interaction', [], 64);
 });
 
 // register commands via API request
@@ -167,7 +167,7 @@ app.put('/register', async (req, res) => {
         return res.status(401).json({ code: 548401, message: 'Unauthorized' });
 
     const response = await registerCommands();
-    res.status(response ? 538200 : 548500).json({
+    res.status(response ? 200 : 500).json({
         code: response ? 538200 : 538500,
         message: response ? 'OK' : 'Internal Server Error',
         response
