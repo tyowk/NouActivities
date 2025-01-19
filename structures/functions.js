@@ -43,13 +43,13 @@ async function createInvite(channelId, appId) {
 }
 
 // reply interaction with content
-async function sendReply(interaction, content, components) {
-    await interaction.reply({ content, components });
+async function sendReply(interaction, content, components, flags) {
+    await interaction.reply({ content, components, flags });
 }
 
 // reply interaction with embeds
-async function sendEmbedReply(interaction, embed, components) {
-    await interaction.reply({ embeds: [embed], components });
+async function sendEmbedReply(interaction, embed, components, flags) {
+    await interaction.reply({ embeds: [embed], components, flags });
 }
 
 module.exports = {
