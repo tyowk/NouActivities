@@ -32,4 +32,9 @@ module.exports = [{
     description: 'See all my available commands',
     type: 1,
     options: []
+},{
+    name: 'report',
+    description: 'Report something to the developer',
+    type: 1,
+    options: []
 }];
