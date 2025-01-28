@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const path = require('path');
 require('dotenv').config();
 
 // util functions
@@ -17,7 +18,7 @@ const {
 } = require('discord.js');
 
 // client instance
-const client = new Client({ intents: Object.values(GatewayIntentBits) });
+const client = new Client({ intents: [] });
 const inviteURL = 'https://discord.com/oauth2/authorize?client_id=1305829720213950474&permissions=549756077057&integration_type=0&scope=bot+applications.commands';
 
 client.on('interaction', async (interaction, raw, ping) => {
@@ -38,19 +39,24 @@ client.on('interaction', async (interaction, raw, ping) => {
         activities: async () => {
             try {
                 if (!interaction.inGuild()) return sendReply(interaction, '🚫 This command cannot be used in DM', [], 64);
-                const channelId = raw.data.options[1].value;
-                const appId = raw.data.options[0].value;
+                const appId = raw.data?.options?.shift()?.value;
+                const channelId = raw.data?.options?.shift()?.value;
             
                 const invite = await createInvite(channelId, appId);
-                if (invite.code === 50013 || !invite) return sendReply(interaction, '🚫 Missing permissions\nMake sure I have `ViewChannel, CreateInvite` permissions', [], 64);
-                if (invite.code === 50035) return sendReply(interaction, '🚫 Bad request', []);
-                await sendReply(interaction, `<:dot:1315241311988879403> **${invite.target_application?.name}**: https://discord.gg/${invite.code}`, [
+                if (invite === 'missing' || !invite) return sendReply(interaction, '🚫 Missing permissions\nMake sure I have `ViewChannel, CreateInvite` permissions', [], 64);
+                if (invite === 'bad' || !invite) return sendReply(interaction, '🚫 Bad request', [], 64);
+                await sendEmbedReply(interaction, new EmbedBuilder()
+                    .setDescription((invite.targetApplication?.description || 'No description provided') + `\n\n<:dot:1315241311988879403> Channel: <#${channelId}>\n<:dot:1315241311988879403> [Terms of Service](${invite.targetApplication?.termsOfServiceURL || 'https://example.com'})\n<:dot:1315241311988879403> [Privacy Policy](${invite.targetApplication?.privacyPolicyURL || 'https://example.com'})`)
+                    .setColor('#3b3ee3')
+                    .setThumbnail(invite.targetApplication?.iconURL() || 'https://cdn.discordapp.com/avatars/1305829720213950474/05437e3fe4fa4db108a8e3d478e74d26.webp?size=2048')
+                    .setTitle(invite.targetApplication?.name || 'Unknown Application'), [
                     new ActionRowBuilder().addComponents(
-                        new ButtonBuilder().setLabel('Start Activity').setURL(`https://discord.gg/${invite.code}`).setStyle(ButtonStyle.Link).setEmoji('☕')
+                        new ButtonBuilder().setLabel('Start Activity').setURL(`https://discord.gg/${invite.code}`).setStyle(ButtonStyle.Link).setEmoji('<:sparkles:1328604240691724349>'),
+                        new ButtonBuilder().setLabel('Copy Link').setCustomId(`copy__${invite.code}`).setStyle(ButtonStyle.Secondary).setEmoji('<:discord:1332158396287160370>')
                     )
                 ]);
             } catch (error) { 
-                await sendReply(interaction, `🚫 Error: ${error.message}`, [], 64); 
+                await sendReply(interaction, `**🚫 An error occurred:** ${error.message}`, [], 64); 
             }
         },
 
@@ -58,6 +64,20 @@ client.on('interaction', async (interaction, raw, ping) => {
             .setDescription(`<:dot:1315241311988879403> Pong! ${ping}ms`)
             .setColor('#3b3ee3'), []),
 
+        report: async () => await sendReply(interaction, null, [
+            new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                .setLabel('Report')
+                .setCustomId(`report__${interaction.user.id}`)
+                .setStyle(ButtonStyle.Danger)
+                .setEmoji('<:questions:1333797030400622616>'),
+                new ButtonBuilder().setLabel('Support')
+                .setURL('https://discord.gg/hyQYXcVnmZ')
+                .setStyle(ButtonStyle.Link)
+                .setEmoji('<:discord:1332158396287160370>')
+            )
+        ]),
+    
         help: async () => await sendEmbedReply(interaction, new EmbedBuilder()
             .addFields({
                 name: '<:dot:1315241311988879403>  /activities',
@@ -71,12 +91,14 @@ client.on('interaction', async (interaction, raw, ping) => {
             },{
                 name: '<:dot:1315241311988879403>  /invite',
                 value: `Generate an invite link for the bot, allowing you to add it to your own Discord server or share it with others.`
+            },{
+                name: '<:dot:1315241311988879403>  /report',
+                value: `Report someone, guild or bugs to the developer.`
             })
             .setColor('#3b3ee3'), [
                 new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setLabel('Invite').setURL(inviteURL).setStyle(ButtonStyle.Link),
-                    new ButtonBuilder().setLabel('Support').setURL('https://discord.gg/hyQYXcVnmZ').setStyle(ButtonStyle.Link),
-                    new ButtonBuilder().setLabel('Report').setCustomId(`report_${interaction.user.id}`).setStyle(ButtonStyle.Danger)
+                    new ButtonBuilder().setLabel('Invite').setURL(inviteURL).setStyle(ButtonStyle.Link).setEmoji('<:link:1332158453183021129>'),
+                    new ButtonBuilder().setLabel('Support').setURL('https://discord.gg/hyQYXcVnmZ').setStyle(ButtonStyle.Link).setEmoji('<:discord:1332158396287160370>'),
                 )
             ])
     };
@@ -90,11 +112,15 @@ client.on('interaction', async (interaction, raw, ping) => {
 
     // Handling button interactions
     if (interaction.isButton()) {
-        const [action, userId] = interaction.customId.split('_');
+        const [action, userId] = interaction.customId.split('__');
+        if (action === 'copy') {
+            return sendReply(interaction, `https://discord.gg/${userId}`, [], 64);
+        };
+        
         if (action === 'report' && userId !== interaction.user.id) return await sendReply(interaction, '🚫 You cannot use this button', [], 64);
 
         return await interaction.showModal(new ModalBuilder()
-            .setCustomId(`${action}_${interaction.user.id}`)
+            .setCustomId(`${action}__${interaction.user.id}`)
             .setTitle('NouActivities Report')
             .addComponents(
                 new ActionRowBuilder().addComponents(
@@ -111,7 +137,7 @@ client.on('interaction', async (interaction, raw, ping) => {
 
     // Handling modal submission
     if (interaction.isModalSubmit()) {
-        const [action, userId] = interaction.customId.split('_');
+        const [action, userId] = interaction.customId.split('__');
         await interaction.deferReply({ ephemeral: true });
         const text = interaction.fields.getTextInputValue('input');
         
@@ -125,11 +151,11 @@ client.on('interaction', async (interaction, raw, ping) => {
             ], components: [new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
                 .setLabel('Accept')
-                .setCustomId(`accept_${interaction.user.id}`)
+                .setCustomId(`accept__${interaction.user.id}`)
                 .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
                 .setLabel('Decline')
-                .setCustomId(`decline_${interaction.user.id}`)
+                .setCustomId(`decline__${interaction.user.id}`)
                 .setStyle(ButtonStyle.Danger)
             )]});
             
@@ -146,7 +172,7 @@ client.on('interaction', async (interaction, raw, ping) => {
                 .setDisabled(true))
             ]});
             
-            const msg = await createMessage(dm?.id, { embeds: [new EmbedBuilder()
+            await createMessage(dm?.id, { embeds: [new EmbedBuilder()
                 .setColor(action === 'accept' ? 'Green' : 'Red')
                 .setThumbnail(interaction.user.displayAvatarURL())
                 .setTitle(`Your report was ${action === 'accept' ? 'accepted' : 'declined'}`)
@@ -161,19 +187,6 @@ client.on('interaction', async (interaction, raw, ping) => {
     return sendReply(interaction, '🚫 Unknown modal interaction', [], 64);
 });
 
-// register commands via API request
-app.put('/register', async (req, res) => {
-    if (req.header('Authorization') !== process.env.TOKEN)
-        return res.status(401).json({ code: 548401, message: 'Unauthorized' });
-
-    const response = await registerCommands();
-    res.status(response ? 200 : 500).json({
-        code: response ? 538200 : 538500,
-        message: response ? 'OK' : 'Internal Server Error',
-        response
-    });
-});
-
 // rechieve interaction post from discord
 app.post('/interactions', verify(process.env.KEY), async (req, res) => {
     if (!req.body) return;
@@ -185,7 +198,7 @@ app.post('/interactions', verify(process.env.KEY), async (req, res) => {
     if (req.body.type === 5) interaction = new ModalSubmitInteraction(client, req.body);
     
     if (!interaction) return res.status(200).json({ type: 4, data: { content: '🚫 Unknown interaction', flags: 64 }});
-    res.status(200);
+    res.status(204);
     client.emit('interaction', interaction, req.body, ping);
 });
 
@@ -201,8 +214,8 @@ app.post('/webhook', express.json(), async (req, res) => {
     res.status(200).json({ code: 538200, message: 'OK' });
     
     await createMessage(process.env.VOTE, { content: `<@${user.id}>`, embeds: [new EmbedBuilder()
-        .setTitle(`${user.global_name || user.username} Just Voted Me!`)
-        .setThumbnail(user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=4096` : `https://cdn.discordapp.com/embed/avatars/0.png`)
+        .setTitle(`${user.globalName || user.username} Just Voted Me!`)
+        .setThumbnail(user.displayAvatarURL())
         .setDescription(`Thanks for voting for me, <@${user.id}>! Your support keeps this bot running and improving every day. We're working hard to bring you even better features.\n\nYou can [vote](https://top.gg/bot/${process.env.ID}/vote) again <t:${((Date.now() + 43200000) / 1000).toFixed()}:R>`)
         .setColor('#3b3ee3')
         .setTimestamp()
